@@ -45,9 +45,9 @@
 
 -(void)tsp;
 
--(double)computeRouteCOG;
+-(NSArray *)computeRouteCOG;
 
--(double)disturb:(double)percentage
-                :(BOOL)fromStart;
+-(NSMutableArray *)disturb:(double)percentage
+              :(Boolean)fromStart;
 
 @end

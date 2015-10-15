@@ -53,15 +53,22 @@ int main(int argc, const char * argv[]) {
         cost = [[r objectAtIndex:0] doubleValue];
         position = [[r objectAtIndex:1] longValue];
         
-        [newRoute insertPoi:poiExample5 :position :cost];
+        [newRoute insertPoi:poiExample5 :1];
+        [newRoute insertPoi:poiExample3 :3];
         
-        double gain5 = [newRoute getDelitionGain:poiExample5];
+        [newRoute tsp];
         
-        [newRoute removePoi:poiExample5 :gain5];
+        NSMutableArray *removed = [newRoute disturb:0.8 :true];
+        
+        [newRoute tsp];
         
         
-        NSLog([NSString stringWithFormat:@"%lf", cost]);
-        NSLog([NSString stringWithFormat:@"%d", position]);
+        NSLog(@"nekaj");
+        
+        
+        
+        
+        
 
     }
     return 0;
