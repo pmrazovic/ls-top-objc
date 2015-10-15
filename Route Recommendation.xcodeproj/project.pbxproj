@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CCF66B681BCE626400D37EE1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B671BCE626400D37EE1 /* main.m */; };
+		CCF66B701BCE631B00D37EE1 /* Poi.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B6F1BCE631B00D37EE1 /* Poi.m */; settings = {ASSET_TAGS = (); }; };
+		CCF66B741BCE80A700D37EE1 /* Route.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B731BCE80A700D37EE1 /* Route.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,10 @@
 /* Begin PBXFileReference section */
 		CCF66B641BCE626400D37EE1 /* Route Recommendation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Route Recommendation"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCF66B671BCE626400D37EE1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		CCF66B6E1BCE631B00D37EE1 /* Poi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Poi.h; sourceTree = "<group>"; };
+		CCF66B6F1BCE631B00D37EE1 /* Poi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Poi.m; sourceTree = "<group>"; };
+		CCF66B721BCE803600D37EE1 /* Route.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Route.h; sourceTree = "<group>"; };
+		CCF66B731BCE80A700D37EE1 /* Route.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Route.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +63,11 @@
 		CCF66B661BCE626400D37EE1 /* Route Recommendation */ = {
 			isa = PBXGroup;
 			children = (
+				CCF66B6E1BCE631B00D37EE1 /* Poi.h */,
+				CCF66B6F1BCE631B00D37EE1 /* Poi.m */,
 				CCF66B671BCE626400D37EE1 /* main.m */,
+				CCF66B721BCE803600D37EE1 /* Route.h */,
+				CCF66B731BCE80A700D37EE1 /* Route.m */,
 			);
 			path = "Route Recommendation";
 			sourceTree = "<group>";
@@ -118,6 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCF66B741BCE80A700D37EE1 /* Route.m in Sources */,
+				CCF66B701BCE631B00D37EE1 /* Poi.m in Sources */,
 				CCF66B681BCE626400D37EE1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,6 +247,7 @@
 				CCF66B6D1BCE626400D37EE1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
