@@ -17,14 +17,12 @@
 @synthesize consumedBudget = _consumedBudget;
 @synthesize pois = _pois;
 
--(id)initWithRouteId:(NSString *)routeId
-            startPoi:(Poi *)startPoi
-              endPoi:(Poi *)endPoi {
+-(id)initWithStartPoi:(Poi *)startPoi
+            finishPoi:(Poi *)finishPoi {
 
-    self.routeId = routeId;
     self.pois = [[NSMutableArray alloc] init];
     [self.pois addObject:startPoi];
-    [self.pois addObject:endPoi];
+    [self.pois addObject:finishPoi];
     self.consumedBudget = [self computeTotalConsumedBudget:self.pois];
     self.score = [self computeTotalScore:self.pois];
     return self;

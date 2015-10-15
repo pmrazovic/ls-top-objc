@@ -10,6 +10,7 @@
 		CCF66B681BCE626400D37EE1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B671BCE626400D37EE1 /* main.m */; };
 		CCF66B701BCE631B00D37EE1 /* Poi.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B6F1BCE631B00D37EE1 /* Poi.m */; settings = {ASSET_TAGS = (); }; };
 		CCF66B741BCE80A700D37EE1 /* Route.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B731BCE80A700D37EE1 /* Route.m */; settings = {ASSET_TAGS = (); }; };
+		CCF66B781BCFC0FF00D37EE1 /* TopSolver.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF66B771BCFC0FF00D37EE1 /* TopSolver.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		CCF66B6F1BCE631B00D37EE1 /* Poi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Poi.m; sourceTree = "<group>"; };
 		CCF66B721BCE803600D37EE1 /* Route.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Route.h; sourceTree = "<group>"; };
 		CCF66B731BCE80A700D37EE1 /* Route.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Route.m; sourceTree = "<group>"; };
+		CCF66B761BCFC0E600D37EE1 /* TopSolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopSolver.h; sourceTree = "<group>"; };
+		CCF66B771BCFC0FF00D37EE1 /* TopSolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopSolver.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 				CCF66B671BCE626400D37EE1 /* main.m */,
 				CCF66B721BCE803600D37EE1 /* Route.h */,
 				CCF66B731BCE80A700D37EE1 /* Route.m */,
+				CCF66B761BCFC0E600D37EE1 /* TopSolver.h */,
+				CCF66B771BCFC0FF00D37EE1 /* TopSolver.m */,
 			);
 			path = "Route Recommendation";
 			sourceTree = "<group>";
@@ -128,6 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCF66B781BCFC0FF00D37EE1 /* TopSolver.m in Sources */,
 				CCF66B741BCE80A700D37EE1 /* Route.m in Sources */,
 				CCF66B701BCE631B00D37EE1 /* Poi.m in Sources */,
 				CCF66B681BCE626400D37EE1 /* main.m in Sources */,

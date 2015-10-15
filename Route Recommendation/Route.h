@@ -20,9 +20,8 @@
 @property double consumedBudget;
 @property NSMutableArray *pois;
 
-- (id)initWithRouteId:(NSString *)routeId
-             startPoi:(Poi *)startPoi
-               endPoi:(Poi *)endPoi;
+- (id)initWithStartPoi:(Poi *)startPoi
+            finishPoi:(Poi *)finishPoi;
 
 -(void)insertPoi:(Poi *)insertPoi
                 :(NSUInteger)position;
