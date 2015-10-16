@@ -91,7 +91,12 @@ int main(int argc, const char * argv[]) {
 
         TopSolver *topSolver = [[TopSolver alloc] initWithRouteCount:4 availableBudget:300.0 walkingSpeed:65.0 pois:pois startLat:41.375128 startLng:2.16835 finishLat:41.375128 finishLng:2.16835];
         
-        NSArray *routes = [topSolver run:10 :10];
+        NSDate *methodStart = [NSDate date];
+        NSArray *solutionRoutes = [topSolver run:10 :10];
+        NSDate *methodFinish = [NSDate date];
+        NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
+        NSLog(@"executionTime = %f", executionTime);
+        
 
     }
     return 0;

@@ -23,6 +23,8 @@
 @synthesize availablePois = _availablePois;
 @synthesize assignedPois = _assignedPois;
 @synthesize routes = _routes;
+@synthesize solutionScore = _solutionScore;
+@synthesize solutionRoutes = _solutionRoutes;
 
 -(id)initWithRouteCount:(NSUInteger)routeCount
         availableBudget:(double)availableBudget
@@ -51,13 +53,75 @@
 -(NSArray *)run:(NSUInteger)maxAlgLoop
                :(NSUInteger)maxLSLoop {
 
+    self.solutionScore = 0.0;
+    self.solutionRoutes = [[NSMutableArray alloc] init];
+    
     [self construct];
+    NSUInteger algLoop = 0;
+    NSUInteger disturbCount = 0;
     
+    while (algLoop < maxAlgLoop) {
+        algLoop++;
+        NSUInteger lsLoop = 0;
+        double solutionScore = 0.0;
+        NSMutableArray *solutionRoutes = [[NSMutableArray alloc] init];
+        Boolean solutionImproved = true;
+        
+        while (solutionImproved && (lsLoop < maxLSLoop)) {
+            lsLoop++;
+            solutionImproved = false;
+
+            [self swap];
+            [self tsp];
+            [self swap];
+            [self move];
+            [self insert];
+            [self replace];
+            
+            double newSolutionScore = [self computeSolutionScore];
+            if (newSolutionScore > solutionScore) {
+                [solutionRoutes removeAllObjects];
+                for (Route *route in self.routes) {
+                    NSMutableArray *routePois = [[NSMutableArray alloc] init];
+                    for (Poi *routePoi in route.pois) {
+                        [routePois addObject:routePoi.poiId];
+                    }
+                    [solutionRoutes addObject:routePois];
+                }
+                solutionScore = newSolutionScore;
+                solutionImproved = true;
+            }
+        }
+        
+        if (solutionScore > self.solutionScore) {
+            self.solutionScore = solutionScore;
+            [self.solutionRoutes removeAllObjects];
+            for (NSMutableArray *routePoiIds in solutionRoutes) {
+                [self.solutionRoutes addObject:routePoiIds];
+            }
+        } else if (solutionScore == self.solutionScore) {
+            if (disturbCount == 0) {
+                [self disturb:0.7 :false];
+                disturbCount++;
+            } else if (disturbCount == 1) {
+                [self disturb:0.7 :true];
+                disturbCount++;
+            } else {
+                return self.solutionRoutes;
+            }
+        }
+        
+        if (algLoop == maxAlgLoop/2) {
+            [self disturb:0.7 :false];
+            disturbCount++;
+        }
+        
+    }
     
-    NSArray *resultRoutes = [[NSArray alloc] init];
-    return resultRoutes;
+    return self.solutionRoutes;
 }
 
+// Greedy construction heuristic creates initial solution
 -(void)construct {
     // Compute distances to start and finish POI and filter reachable POIs
     NSMutableArray *reachablePois = [[NSMutableArray alloc] init];
@@ -180,6 +244,194 @@
     self.availablePois = [NSMutableArray arrayWithArray:reachablePois];
 }
 
+// Method swaps a location between two tours
+// This heuristic endeavours to exchange two locations between two tours
+-(void)swap{
+    Boolean swap = true;
+    while (swap) {
+        swap = false;
+        for (Poi *poiI in self.assignedPois) {
+            for (Poi *poiJ in self.assignedPois) {
+                
+                Route *routeI = poiI.route;
+                Route *routeJ = poiJ.route;
+                if (routeI != routeJ) {
+                    
+                    NSArray *rI = [routeI findCheapestReplace:poiI :poiJ];
+                    double gainI = [[rI objectAtIndex:0] doubleValue];
+                    double costI = [[rI objectAtIndex:1] doubleValue];
+                    NSUInteger insertPositionI = [[rI objectAtIndex:2] integerValue];
+                    
+                    NSArray *rJ = [routeJ findCheapestReplace:poiJ :poiI];
+                    double gainJ = [[rJ objectAtIndex:0] doubleValue];
+                    double costJ = [[rJ objectAtIndex:1] doubleValue];
+                    NSUInteger insertPositionJ = [[rJ objectAtIndex:2] integerValue];
+                    
+                    if ((routeI.consumedBudget - gainI + costI <= self.availableBudget) &&
+                       (routeJ.consumedBudget - gainJ + costJ <= self.availableBudget )) {
+                        // If the travel time can be reduced in each tour, or if the time saved in one tour
+                        // is longer than the extra time needed in the other tour, the swap is carried out
+                        if ((gainI > costI && gainJ > costJ) ||
+                            (gainI - costI > costJ - gainJ) ||
+                            (gainJ - costJ > costI - gainI)) {
+                            [routeI removePoi:poiI :gainI];
+                            [routeJ removePoi:poiJ :gainJ];
+                            [routeI insertPoi:poiJ :insertPositionI :costI];
+                            [routeJ insertPoi:poiI :insertPositionJ :costJ];
+                            swap = true;
+                            break;
+                        }
+                    }
+                    
+                }
+            }
+            if (swap) break;
+        }
+    }
+}
+
+// A 2-opt heuristic for traveling salesman problem
+// https://en.wikipedia.org/wiki/2-opt
+-(void)tsp {
+    for (Route *route in self.routes) {
+        [route tsp];
+    }
+}
+
+// Move a location from one tour to another
+// Methods tries to group together the available time left.
+-(void)move {
+    NSMutableArray *shortenedRoutes = [[NSMutableArray alloc] init];
+    Boolean moveMade = true;
+    
+    while (moveMade) {
+        moveMade = false;
+        for (Poi *movingPoi in self.assignedPois) {
+            for (Route *newRoute in self.routes) {
+                Route *oldRoute = movingPoi.route;
+                if ((newRoute != oldRoute) && ![shortenedRoutes containsObject:newRoute]) {
+                    
+                    NSArray *r = [newRoute findCheapestInsertion:movingPoi];
+                    double insertCost = [[r objectAtIndex:0] doubleValue];
+                    NSUInteger insertPosition = [[r objectAtIndex:1] integerValue];
+                    
+                    if (newRoute.consumedBudget + insertCost <= self.availableBudget) {
+                        [oldRoute removePoi:movingPoi];
+                        [newRoute insertPoi:movingPoi :insertPosition :insertCost];
+                        if (![shortenedRoutes containsObject:oldRoute]) [shortenedRoutes addObject:oldRoute];
+                        moveMade = true;
+                        break;
+                    }
+                    
+                }
+            }
+            if (moveMade) break;
+        }
+    }
+}
+
+// Method attempts to insert new locations in the tours in
+// the position where the location consumes the least travel time.
+-(void)insert {
+    for (Route *route in self.routes) {
+        Boolean insertion = true;
+        while (insertion) {
+            insertion = false;
+            NSArray *sortedAvailablePois = [self sortByAppropriateness:route];
+            for (Poi *insertPoi in sortedAvailablePois) {
+                
+                NSArray *r = [route findCheapestInsertion:insertPoi];
+                double insertCost = [[r objectAtIndex:0] doubleValue];
+                NSUInteger insertPosition = [[r objectAtIndex:1] integerValue];
+                
+                if (route.consumedBudget + insertCost <= self.availableBudget) {
+                    [route insertPoi:insertPoi :insertPosition :insertCost];
+                    [self.availablePois removeObject:insertPoi];
+                    [self.assignedPois addObject:insertPoi];
+                    insertion = true;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// Method seeks to replace an included location by a non-included location with a higher score.
+-(void)replace {
+    for (Route *route in self.routes) {
+        Boolean replacement = true;
+        while (replacement) {
+            replacement = false;
+            NSArray *sortedAvailablePois = [self sortByAppropriateness:route];
+            for (Poi *insertPoi in sortedAvailablePois) {
+                
+                // First check if there is enough budget to insert POI
+                NSArray *r = [route findCheapestInsertion:insertPoi];
+                double insertCost = [[r objectAtIndex:0] doubleValue];
+                NSUInteger insertPosition = [[r objectAtIndex:1] integerValue];
+                if (route.consumedBudget + insertCost <= self.availableBudget) {
+                    [route insertPoi:insertPoi :insertPosition :insertCost];
+                    [self.availablePois removeObject:insertPoi];
+                    [self.assignedPois addObject:insertPoi];
+                    replacement = true;
+                    break;
+                }
+                
+                // If no avialable budget, try to find it by removing pois with lower scores
+                for (Poi *removePoi in [route.pois subarrayWithRange:NSMakeRange(1, [route.pois count]-2)]) {
+                    if (removePoi.score < insertPoi.score) {
+                        
+                        NSArray *r = [route findCheapestReplace:removePoi :insertPoi];
+                        double removeGain = [[r objectAtIndex:0] doubleValue];
+                        double insertCost = [[r objectAtIndex:1] doubleValue];
+                        NSUInteger insertPosition = [[r objectAtIndex:2] integerValue];
+                        
+                        if (route.consumedBudget - removeGain + insertCost <= self.availableBudget) {
+                            [route removePoi:removePoi :removeGain];
+                            [self.availablePois addObject:removePoi];
+                            [self.assignedPois removeObject:removePoi];
+                            [route insertPoi:insertPoi :insertPosition :insertCost];
+                            [self.availablePois removeObject:insertPoi];
+                            [self.assignedPois addObject:insertPoi];
+                            replacement = true;
+                            break;
+                        }
+                        
+                    }
+                }
+                if (replacement) break;
+
+            }
+        }
+    }
+}
+
+-(void)disturb:(double)percentage
+              :(Boolean)fromStart {
+    for (Route *route in self.routes) {
+        for (Poi *removedPoi in [route disturb:percentage :fromStart]) {
+            removedPoi.route = nil;
+            [self.availablePois addObject:removedPoi];
+            [self.assignedPois removeObject:removedPoi];
+        }
+    }
+}
+
+-(NSArray *)sortByAppropriateness:(Route *)route {
+    NSArray *cog = [route computeRouteCOG];
+    NSMutableDictionary *apprDict = [[NSMutableDictionary alloc] init];
+    for (Poi *availablePoi in self.availablePois) {
+        apprDict[availablePoi.poiId] = [NSNumber numberWithDouble:[availablePoi distanceFrom:[[cog objectAtIndex:0] doubleValue] :[[cog objectAtIndex:1] doubleValue] :self.walkingSpeed]];
+    }
+    NSArray *sortedArray = [self.availablePois sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSNumber *cogDistance1 = [apprDict objectForKey:((Poi *)obj1).poiId];
+        NSNumber *cogDistance2 = [apprDict objectForKey:((Poi *)obj2).poiId];
+        return  [cogDistance2 compare:cogDistance1];
+    }];
+    
+    return sortedArray;
+}
+
 -(void)computeDistancesBetweenPois:(NSMutableArray *)pois {
     for (Poi *poiI in pois) {
         for (Poi *poiJ in pois) {
@@ -188,10 +440,13 @@
     }
 }
 
-
-
-
-
+-(double)computeSolutionScore {
+    double solutionScore = 0.0;
+    for (Route *route in self.routes) {
+        solutionScore += route.score;
+    }
+    return solutionScore;
+}
 
 @end
 

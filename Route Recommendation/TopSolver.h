@@ -26,6 +26,8 @@
 @property NSMutableArray *availablePois;
 @property NSMutableArray *assignedPois;
 @property NSMutableArray *routes;
+@property double solutionScore;
+@property NSMutableArray *solutionRoutes;
 
 - (id)initWithRouteCount:(NSUInteger)routeCount
          availableBudget:(double)availableBudget

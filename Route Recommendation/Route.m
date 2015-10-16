@@ -186,21 +186,21 @@
                           :(Boolean)fromStart {
     NSUInteger removeCount = (NSUInteger)(([self.pois count]-2)*percentage);
     NSMutableArray *removedPois = [[NSMutableArray alloc] init];
-    if (fromStart) {
-        NSUInteger counter = 0;
-        while (counter < removeCount) {
-            [removedPois addObject:self.pois[1]];
-            [self.pois removeObject:self.pois[1]];
-            counter++;
+    Poi *removePoi;
+    
+    NSUInteger counter = 0;
+    while (counter < removeCount) {
+        if (fromStart) {
+            removePoi = self.pois[1];
+        } else {
+            removePoi = self.pois[[self.pois count] - 2];
         }
-    } else {
-        NSUInteger counter = 0;
-        while (counter < removeCount) {
-            [removedPois addObject:self.pois[[self.pois count] - 2]];
-            [self.pois removeObject:self.pois[[self.pois count] - 2]];
-            counter++;
-        }
+        [removedPois addObject:removePoi];
+        [self.pois removeObject:removePoi];
+        self.score -= removePoi.score;
+        counter++;
     }
+    
     return removedPois;
 }
 
