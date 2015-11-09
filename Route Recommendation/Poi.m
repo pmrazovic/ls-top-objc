@@ -52,7 +52,14 @@
     double a = pow(sin(dlat/2),2) + cos([self toRadians:self.lat]) * cos([self toRadians:lat]) * pow(sin(dlon/2),2);
     double c = 2 * atan2(sqrt(a),sqrt(1-a));
     double d = 6373 * c * 1000;
-    d = d / walkingSpeed;
+    
+    if (d > 1500) {
+        // simulating speed of public transport (200 m/min)
+        // http://www.tmb.cat/en/transports-en-xifres
+        d = d / 200.0;
+    } else {
+        d = d / walkingSpeed;
+    }
     
     return d;
 }
