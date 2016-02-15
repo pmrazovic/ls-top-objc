@@ -386,6 +386,7 @@
                         double insertCost = [[r objectAtIndex:1] doubleValue];
                         NSUInteger insertPosition = [[r objectAtIndex:2] integerValue];
                         
+                        double temp = route.consumedBudget - removeGain + insertCost;
                         if (route.consumedBudget - removeGain + insertCost <= self.availableBudget) {
                             [route removePoi:removePoi :removeGain];
                             [self.availablePois addObject:removePoi];

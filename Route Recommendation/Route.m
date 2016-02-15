@@ -50,7 +50,7 @@
 }
 
 -(void)removePoi:(Poi *)removePoi
-                :(long)gain {
+                :(double)gain {
     [self.pois removeObject:removePoi];
     self.consumedBudget -= gain;
     self.score -= removePoi.score;
@@ -61,7 +61,7 @@
     double insertCost = DBL_MAX;
     NSUInteger insertPosition = 0;
     for (NSUInteger i = 1; i < [self.pois count]; i++) {
-        float newCost = [self getInsertionCost:self.pois :insertPoi :i];
+        double newCost = [self getInsertionCost:self.pois :insertPoi :i];
         if (newCost < insertCost) {
             insertCost = newCost;
             insertPosition = i;

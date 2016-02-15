@@ -33,7 +33,7 @@
 -(void)removePoi:(Poi *)removePoi;
 
 -(void)removePoi:(Poi *)removePoi
-                :(long)gain;
+                :(double)gain;
 
 -(NSArray *)findCheapestInsertion:(Poi *)insertPoi;
 
